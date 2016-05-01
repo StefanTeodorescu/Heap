@@ -5,11 +5,14 @@
 #ifndef HEAP_HEAP_H
 #define HEAP_HEAP_H
 
+#include <stdexcept>
+
 template <typename T, typename Comp>
 class Heap {
 private:
     T* H;
     int size, capacity;
+    Comp comp; //nu am gasit alta metoda mai eleganta
 
     void resize(const int& new_capacity) {
         T* new_H = new T[new_capacity];
@@ -24,8 +27,8 @@ private:
     void pushUp() {
         int k = size - 1;
 
-        while (k > 0 && !Comp(H[k], H[(k - 1) / 2])) {
-            swap(H[k], H[(k - 1) / 2]);
+        while (k > 0 && !comp(H[(k - 1) / 2], H[k])) { //nu se indeplineste proprietatea de heap
+            std::swap(H[k], H[(k - 1) / 2]);
             k = (k - 1) / 2;
         }
     }
@@ -36,29 +39,31 @@ private:
         while (true) {
             if (2 * k + 1 < size) { //exista fiu stang
                 if (2 * k + 2 < size) { //exista fiu drept
-                    if (Comp(H[k], H[2 * k + 1]) && Comp(H[k], H[2 * k + 2])) { //proprietatea de heap este indeplinita
+                    if (comp(H[k], H[2 * k + 1]) && comp(H[k], H[2 * k + 2])) { //proprietatea de heap este indeplinita
                         break;
                     }
 
-                    if (Comp(H[2 * k + 1], H[2 * k + 2])) { //aleg fiul stang sa il aduc sus
-                        swap(H[k], H[2 * k + 1]);
+                    if (comp(H[2 * k + 1], H[2 * k + 2])) { //aleg fiul stang sa il aduc sus
+                        std::swap(H[k], H[2 * k + 1]);
                         k = 2 * k + 1;
                         continue;
                     } else { //aleg fiul drept sa il aduc sus
-                        swap(H[k], H[2 * k + 2]);
+                        std::swap(H[k], H[2 * k + 2]);
                         k = 2 * k + 2;
                         continue;
                     }
                 } else { //exista fiu stang si nu exista drept
-                    if (Comp(H[k], H[2 * k + 1])) { //proprietatea de heap este indeplinita
+                    if (comp(H[k], H[2 * k + 1])) { //proprietatea de heap este indeplinita
                         break;
-                    } else {
-                        swap(H[k], H[2 * k + 1]);
+                    } else { //aduc fiul stang sus
+                        std::swap(H[k], H[2 * k + 1]);
                         k = 2 * k + 1;
                         continue;
                     }
                 }
-            } //daca nu exista fiu, este indeplinita proprietatea
+            } else {//daca nu exista fii, proprietatea este indeplinita
+                break;
+            }
         }
     }
 
@@ -90,19 +95,19 @@ public:
 
     T front() {
         if (size == 0) {
-            throw runtime_eror("front() method called for empty heap.");
+            throw std::runtime_error("front() method called for empty heap.");
         }
         return H[0];
     }
 
     T pop() {
         if (size == 0) {
-            throw runtime_error("pop() method called for empty heap.");
+            throw std::runtime_error("pop() method called for empty heap.");
         }
 
         const T ret = H[0];
         if (size > 1) {
-            swap(H[0], H[size - 1]);
+            std::swap(H[0], H[size - 1]);
             size--;
             pushDown();
         } else { //size == 1
