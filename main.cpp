@@ -19,7 +19,7 @@ public:
 
 int main() {
     Heap<int, less<int>> H1; //traiasca STL
-    Heap<int, greater<int>> H2;
+    Heap<int, greater<int>> H2; //merge si cu clasele mele si cu cele din STL
 
     H1.insert(1);
     H1.insert(5);
