@@ -22,6 +22,7 @@ private:
 
         delete[] H;
         H = new_H;
+        capacity = new_capacity;
     }
 
     void pushUp() {
